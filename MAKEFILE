@@ -1,0 +1,8 @@
+CC = g++
+IDIR = include
+LDIR = libs
+
+compile:
+	$(CC) -g -w src/*.cpp vendor/Imgui/*.cpp -o build/program.exe -I$(IDIR) -Ivendor -L$(LDIR) -lmingw32 -lSDL2main -lSDL2_image -lSDL2 -lopengl32 -lglew32
+run:
+	build/program.exe
