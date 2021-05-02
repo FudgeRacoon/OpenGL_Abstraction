@@ -41,74 +41,83 @@ void ImGui_ShutDown()
 
 int main(int argc, char* argv[])
 {
-    Window* window = new Window("OpenGL program", 800, 600, SDL_WINDOW_SHOWN, false);
+    Window* window = new Window("OpenGL program", 900, 700, SDL_WINDOW_SHOWN, false);
 
     float squareVertices[] = 
     {
-        -1.0, -1.0,  1.0,
-         1.0, -1.0,  1.0,
-         1.0,  1.0,  1.0,
-        -1.0,  1.0,  1.0,
+        -0.5f,0.5f,-0.5f,	
+        -0.5f,-0.5f,-0.5f,	
+         0.5f,-0.5f,-0.5f,	
+         0.5f,0.5f,-0.5f,		
         
-        -1.0, -1.0, -1.0,
-         1.0, -1.0, -1.0,
-         1.0,  1.0, -1.0,
-        -1.0,  1.0, -1.0
+        -0.5f,0.5f,0.5f,	
+        -0.5f,-0.5f,0.5f,	
+         0.5f,-0.5f,0.5f,	
+         0.5f,0.5f,0.5f,
+        
+         0.5f,0.5f,-0.5f,	
+         0.5f,-0.5f,-0.5f,	
+         0.5f,-0.5f,0.5f,	
+         0.5f,0.5f,0.5f,
+        
+        -0.5f,0.5f,-0.5f,	
+        -0.5f,-0.5f,-0.5f,	
+        -0.5f,-0.5f,0.5f,	
+        -0.5f,0.5f,0.5f,
+        
+        -0.5f,0.5f,0.5f,
+        -0.5f,0.5f,-0.5f,
+         0.5f,0.5f,-0.5f,
+         0.5f,0.5f,0.5f,
+        
+        -0.5f,-0.5f,0.5f,
+        -0.5f,-0.5f,-0.5f,
+         0.5f,-0.5f,-0.5f,
+         0.5f,-0.5f,0.5f
     };
 
     float squareTexCoordinates[] = 
     {
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f, 
-
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0,
-
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0,
-
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0,
-
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0,
-
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0
+        0,0,
+        0,1,
+        1,1,
+        1,0,			
+        0,0,
+        0,1,
+        1,1,
+        1,0,			
+        0,0,
+        0,1,
+        1,1,
+        1,0,
+        0,0,
+        0,1,
+        1,1,
+        1,0,
+        0,0,
+        0,1,
+        1,1,
+        1,0,
+        0,0,
+        0,1,
+        1,1,
+        1,0
     };
 
     unsigned int squareIndicies[] = 
     {
-       	// front
-		0, 1, 2,
-		2, 3, 0,
-		// right
-		1, 5, 6,
-		6, 2, 1,
-		// back
-		7, 6, 5,
-		5, 4, 7,
-		// left
-		4, 0, 3,
-		3, 7, 4,
-		// bottom
-		4, 5, 1,
-		1, 0, 4,
-		// top
-		3, 2, 6,
-		6, 7, 3
+        0,1,3,	
+        3,1,2,	
+        4,5,7,
+        7,5,6,
+        8,9,11,
+        11,9,10,
+        12,13,15,
+        15,13,14,	
+        16,17,19,
+        19,17,18,
+        20,21,23,
+        23,21,22 
     };
 
     Mesh square(squareVertices, sizeof(squareVertices), squareIndicies, sizeof(squareIndicies));
@@ -118,6 +127,11 @@ int main(int argc, char* argv[])
     Shader shader("res\\shaders\\vertex.shader", "res\\shaders\\fragment.shader");
 
     ImGui_Init(window);
+
+    float position[3] = {0.0f, 0.0f, -3.0f};
+    float rotation[3] = {0.0f, 0.0f, 0.0f};
+    float scale[3] = {1.0f, 1.0f, 1.0f};
+    float color[3] = {1.0f, 1.0f, 1.0f};
 
     while(window->IsRunning())
     {
@@ -135,18 +149,16 @@ int main(int argc, char* argv[])
 
         float counter = 0.0f;
 
-        float position[3];
-        float rotation[3];
-        float scale[3];
-        float color[3];
-
         ImGui::Begin("Transform Component");
             if(!runAnimation)
             {
+                ImGui::Text("Model");
                 ImGui::SliderFloat3("Position", position, -10.0f, 10.0f);
                 ImGui::SliderFloat3("Rotation", rotation, 0.0f, 360);
-                ImGui::SliderFloat3("Scale", scale, 0.0f, 1.0f);
-                ImGui::ColorEdit3("Color", color);
+                ImGui::SliderFloat3("Scale", scale, 0.0f, 10.0f);
+                ImGui::Spacing();
+                ImGui::Spacing();
+                ImGui::ColorPicker3("Color", color);
             }
             ImGui::Checkbox("Run Animation", &runAnimation);
         ImGui::End();
