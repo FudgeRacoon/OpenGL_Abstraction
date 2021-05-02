@@ -24,11 +24,11 @@ public:
 
 public:
     Mesh();
-    Mesh(float vertices[], uint32_t verticesSize, uint32_t indicies[], uint32_t indiciesSize);
+    Mesh(float vertices[], uint32_t verticesSize, float texCoord[], uint32_t texCoordSize, uint32_t indicies[], uint32_t indiciesSize);
     ~Mesh();
 
 public:
-    void AddTexture(const char* filepath, float* texCoord, uint32_t texCoordSize);
+    void AddTexture(const char* filepath);
 
 public:
     VertexBuffer* GetVertexBuffer();

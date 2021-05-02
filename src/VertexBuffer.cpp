@@ -1,13 +1,14 @@
 #include "Core/VertexBuffer.h"
 
-VertexBuffer::VertexBuffer(const void* data, uint32_t* indicies, uint32_t dataSize, uint32_t indiciesSize)
+VertexBuffer::VertexBuffer(float* vertices, float* texCoord, uint32_t* indicies, uint32_t verticesSize, uint32_t texCoordSize, uint32_t indiciesSize)
 {
     //Create a vertex array object to store VBOs
     glGenVertexArrays(1, &this->VAO_ID);
     glBindVertexArray(this->VAO_ID);
 
     //Add the vertices position attribute
-    this->AddAttribute(0, data, dataSize, 3, 3 * sizeof(float));
+    this->AddAttribute(0, vertices, verticesSize, 3, 3 * sizeof(float));
+    this->AddAttribute(1, texCoord, texCoordSize, 2, 2 * sizeof(float));
     
     //Create an index buffer
     this->CreateIndexBuffer(indiciesSize, indicies);
