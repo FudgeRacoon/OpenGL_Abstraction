@@ -14,16 +14,46 @@ using namespace std;
 
 SDL_Event event;
 
+void ImGui_Init(Window* window)
+{
+    ImGui::CreateContext();
+    ImGui_ImplSDL2_InitForOpenGL(window->GetWindow(), window->GetContext());
+    ImGui_ImplOpenGL3_Init("#version 330 core");
+    ImGui::StyleColorsDark();
+}
+void ImGui_CreateNewFrame(Window* window)
+{
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame(window->GetWindow());
+    ImGui::NewFrame();
+}
+void ImGui_Render()
+{
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+void ImGui_ShutDown()
+{
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+}
+
 int main(int argc, char* argv[])
 {
     Window* window = new Window("OpenGL program", 800, 600, SDL_WINDOW_SHOWN, false);
 
     float squareVertices[] = 
     {
-        -0.5f, -0.5f,  0.0f,
-         0.5f, -0.5f,  0.0f,
-         0.5f,  0.5f,  0.0f,
-        -0.5f,  0.5f,  0.0f
+        -1.0, -1.0,  1.0,
+         1.0, -1.0,  1.0,
+         1.0,  1.0,  1.0,
+        -1.0,  1.0,  1.0,
+        
+        -1.0, -1.0, -1.0,
+         1.0, -1.0, -1.0,
+         1.0,  1.0, -1.0,
+        -1.0,  1.0, -1.0
     };
 
     float squareTexCoordinates[] = 
@@ -31,13 +61,54 @@ int main(int argc, char* argv[])
         0.0f, 0.0f,
         1.0f, 0.0f,
         1.0f, 1.0f,
-        0.0f, 1.0f
+        0.0f, 1.0f, 
+
+        0.0f, 0.0f,
+        1.0f, 0.0f,
+        1.0f, 1.0f,
+        0.0f, 1.0,
+
+        0.0f, 0.0f,
+        1.0f, 0.0f,
+        1.0f, 1.0f,
+        0.0f, 1.0,
+
+        0.0f, 0.0f,
+        1.0f, 0.0f,
+        1.0f, 1.0f,
+        0.0f, 1.0,
+
+        0.0f, 0.0f,
+        1.0f, 0.0f,
+        1.0f, 1.0f,
+        0.0f, 1.0,
+
+        0.0f, 0.0f,
+        1.0f, 0.0f,
+        1.0f, 1.0f,
+        0.0f, 1.0
     };
 
     unsigned int squareIndicies[] = 
     {
-        0, 1, 2,
-        2, 3, 0
+       	// front
+		0, 1, 2,
+		2, 3, 0,
+		// right
+		1, 5, 6,
+		6, 2, 1,
+		// back
+		7, 6, 5,
+		5, 4, 7,
+		// left
+		4, 0, 3,
+		3, 7, 4,
+		// bottom
+		4, 5, 1,
+		1, 0, 4,
+		// top
+		3, 2, 6,
+		6, 7, 3
     };
 
     Mesh square(squareVertices, sizeof(squareVertices), squareIndicies, sizeof(squareIndicies));
@@ -46,16 +117,7 @@ int main(int argc, char* argv[])
     Renderer renderer;
     Shader shader("res\\shaders\\vertex.shader", "res\\shaders\\fragment.shader");
 
-
-    ImGui::CreateContext();
-    ImGui_ImplSDL2_InitForOpenGL(window->GetWindow(), window->GetContext());
-    ImGui_ImplOpenGL3_Init("#version 330 core");
-    ImGui::StyleColorsDark();
-
-    bool show_demo_window = true;
-    bool show_another_window = false;
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
+    ImGui_Init(window);
 
     while(window->IsRunning())
     {
@@ -67,44 +129,60 @@ int main(int argc, char* argv[])
         
         renderer.ClearBuffers();
 
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplSDL2_NewFrame(window->GetWindow());
-        ImGui::NewFrame();
+        ImGui_CreateNewFrame(window);
 
-        square.position.z = -3.0f;
+        bool runAnimation;
 
-        renderer.Render(square, shader);
+        float counter = 0.0f;
 
+        float position[3];
+        float rotation[3];
+        float scale[3];
+        float color[3];
 
-        static float f = 0.0f;
-        static int counter = 0;
-
-        ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-        ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-        ImGui::Checkbox("Another Window", &show_another_window);
-
-        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-        ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-        if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-            counter++;
-        ImGui::SameLine();
-        ImGui::Text("counter = %d", counter);
-
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::Begin("Transform Component");
+            if(!runAnimation)
+            {
+                ImGui::SliderFloat3("Position", position, -10.0f, 10.0f);
+                ImGui::SliderFloat3("Rotation", rotation, 0.0f, 360);
+                ImGui::SliderFloat3("Scale", scale, 0.0f, 1.0f);
+                ImGui::ColorEdit3("Color", color);
+            }
+            ImGui::Checkbox("Run Animation", &runAnimation);
         ImGui::End();
+        
+        if(!runAnimation)
+        {
+            square.position.x = position[0];
+            square.position.y = position[1];
+            square.position.z = position[2];
 
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+            square.rotation.x = rotation[0];
+            square.rotation.y = rotation[1];
+            square.rotation.z = rotation[2];
+
+            square.scale.x = scale[0];
+            square.scale.y = scale[1];
+            square.scale.z = scale[2];
+
+            square.color.x = color[0];
+            square.color.y = color[1];
+            square.color.z = color[2];
+        }
+        else
+        {
+            counter += 0.0005f;
+            square.rotation += sin(counter);
+        }
+        
+        renderer.Render(square, shader);
+        
+        ImGui_Render();
 
         renderer.SwapBuffers(window);
     }
 
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplSDL2_Shutdown();
-    ImGui::DestroyContext();
+    ImGui_ShutDown();
 
     return EXIT_SUCCESS;
 }
