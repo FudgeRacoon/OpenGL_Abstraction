@@ -10,6 +10,7 @@
 #include "Core/Shader.h"
 #include "Core/VertexBuffer.h"
 #include "Core/Mesh.h"
+#include "Core/ObjParser.h"
 using namespace std;
 
 SDL_Event event;
@@ -43,85 +44,8 @@ int main(int argc, char* argv[])
 {
     Window* window = new Window("OpenGL program", 900, 700, SDL_WINDOW_SHOWN, false);
 
-    float squareVertices[] = 
-    {
-        -0.5f,0.5f,-0.5f,	
-        -0.5f,-0.5f,-0.5f,	
-         0.5f,-0.5f,-0.5f,	
-         0.5f,0.5f,-0.5f,		
-        
-        -0.5f,0.5f,0.5f,	
-        -0.5f,-0.5f,0.5f,	
-         0.5f,-0.5f,0.5f,	
-         0.5f,0.5f,0.5f,
-        
-         0.5f,0.5f,-0.5f,	
-         0.5f,-0.5f,-0.5f,	
-         0.5f,-0.5f,0.5f,	
-         0.5f,0.5f,0.5f,
-        
-        -0.5f,0.5f,-0.5f,	
-        -0.5f,-0.5f,-0.5f,	
-        -0.5f,-0.5f,0.5f,	
-        -0.5f,0.5f,0.5f,
-        
-        -0.5f,0.5f,0.5f,
-        -0.5f,0.5f,-0.5f,
-         0.5f,0.5f,-0.5f,
-         0.5f,0.5f,0.5f,
-        
-        -0.5f,-0.5f,0.5f,
-        -0.5f,-0.5f,-0.5f,
-         0.5f,-0.5f,-0.5f,
-         0.5f,-0.5f,0.5f
-    };
-
-    float squareTexCoordinates[] = 
-    {
-        0,0,
-        0,1,
-        1,1,
-        1,0,			
-        0,0,
-        0,1,
-        1,1,
-        1,0,			
-        0,0,
-        0,1,
-        1,1,
-        1,0,
-        0,0,
-        0,1,
-        1,1,
-        1,0,
-        0,0,
-        0,1,
-        1,1,
-        1,0,
-        0,0,
-        0,1,
-        1,1,
-        1,0
-    };
-
-    unsigned int squareIndicies[] = 
-    {
-        0,1,3,	
-        3,1,2,	
-        4,5,7,
-        7,5,6,
-        8,9,11,
-        11,9,10,
-        12,13,15,
-        15,13,14,	
-        16,17,19,
-        19,17,18,
-        20,21,23,
-        23,21,22 
-    };
-
-    Mesh square(squareVertices, sizeof(squareVertices), squareIndicies, sizeof(squareIndicies));
-    square.AddTexture("res\\assets\\textures\\woodenCrate.png", squareTexCoordinates, sizeof(squareTexCoordinates));
+    Mesh* square = ObjParser::LoadObj("res\\assets\\objs\\cube.obj");
+    square->AddTexture("res\\assets\\textures\\woodenCrate.png");
 
     Renderer renderer;
     Shader shader("res\\shaders\\vertex.shader", "res\\shaders\\fragment.shader");
@@ -165,26 +89,26 @@ int main(int argc, char* argv[])
         
         if(!runAnimation)
         {
-            square.position.x = position[0];
-            square.position.y = position[1];
-            square.position.z = position[2];
+            square->position.x = position[0];
+            square->position.y = position[1];
+            square->position.z = position[2];
 
-            square.rotation.x = rotation[0];
-            square.rotation.y = rotation[1];
-            square.rotation.z = rotation[2];
+            square->rotation.x = rotation[0];
+            square->rotation.y = rotation[1];
+            square->rotation.z = rotation[2];
 
-            square.scale.x = scale[0];
-            square.scale.y = scale[1];
-            square.scale.z = scale[2];
+            square->scale.x = scale[0];
+            square->scale.y = scale[1];
+            square->scale.z = scale[2];
 
-            square.color.x = color[0];
-            square.color.y = color[1];
-            square.color.z = color[2];
+            square->color.x = color[0];
+            square->color.y = color[1];
+            square->color.z = color[2];
         }
         else
         {
             counter += 0.0005f;
-            square.rotation += sin(counter);
+            square->rotation += sin(counter);
         }
         
         renderer.Render(square, shader);

@@ -30,6 +30,7 @@ private:
                 word += letter;
         }
 
+        data.push_back(word);
         return data;
     }
 
@@ -48,7 +49,7 @@ public:
         {
             std::vector<std::string> data;
 
-            if(line.find("v") != std::string::npos)
+            if(line.find("v ") != std::string::npos)
             {
                 data = SplitString(line, ' ');
                 vertices.push_back(strtof(data[1].c_str(), nullptr));
@@ -56,18 +57,18 @@ public:
                 vertices.push_back(strtof(data[3].c_str(), nullptr));
                 data.clear();
             }
-            else if(line.find("vt") != std::string::npos)
+            else if(line.find("vt ") != std::string::npos)
             {
                 data = SplitString(line, ' ');
                 texCoord.push_back(strtof(data[1].c_str(), nullptr));
                 texCoord.push_back(strtof(data[2].c_str(), nullptr));
                 data.clear();
             }
-            else if(line.find("f") != std::string::npos)
+            else if(line.find("f ") != std::string::npos)
             {
                 data = SplitString(line, ' ');
 
-                for(int i = 0; i < 3; i++)
+                for(int i = 1; i <= 3; i++)
                 {
                     std::vector<std::string> temp = SplitString(data[i], '/');
                     indices.push_back(atoi(temp[0].c_str()) - 1);    
@@ -75,15 +76,19 @@ public:
             }
         }
 
-        uint32_t verticesSize = vertices.size();
-        uint32_t texCoordSize = texCoord.size();
-        uint32_t indiciesSize = indices.size();
+        uint32_t verticesSize = vertices.size() * sizeof(float);
+        uint32_t texCoordSize = texCoord.size() * sizeof(float);
+        uint32_t indiciesSize = indices.size() * sizeof(uint32_t);
 
-        float* vertices_array = &vertices[0];
-        float* texCoord_array = &texCoord[0];
-        uint32_t* indicies_array = &indices[0];
+        float vertices_array[vertices.size()];
+        float texCoord_array[texCoord.size()];
+        uint32_t indices_array[indices.size()];
 
-        Mesh* mesh = new Mesh(vertices_array, verticesSize, texCoord_array, texCoordSize, indicies_array, indiciesSize);
+        std::copy(vertices.begin(), vertices.end(), vertices_array);
+        std::copy(texCoord.begin(), texCoord.end(), texCoord_array);
+        std::copy(indices.begin(), indices.end(), indices_array);
+
+        Mesh* mesh = new Mesh(vertices_array, verticesSize, texCoord_array, texCoordSize, indices_array, indiciesSize);
         return mesh;
     }
 };

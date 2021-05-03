@@ -17,7 +17,7 @@ public:
     void SwapBuffers(Window* window);
     
 public:
-    void Render(Mesh& model, const Shader& shader);
+    void Render(Mesh*& model, const Shader& shader);
 };
 
 #endif

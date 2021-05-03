@@ -1,6 +1,6 @@
 #include "Core/VertexBuffer.h"
 
-VertexBuffer::VertexBuffer(float* vertices, float* texCoord, uint32_t* indicies, uint32_t verticesSize, uint32_t texCoordSize, uint32_t indiciesSize)
+VertexBuffer::VertexBuffer(const void* vertices, float* texCoord, uint32_t* indicies, uint32_t verticesSize, uint32_t texCoordSize, uint32_t indiciesSize)
 {
     //Create a vertex array object to store VBOs
     glGenVertexArrays(1, &this->VAO_ID);

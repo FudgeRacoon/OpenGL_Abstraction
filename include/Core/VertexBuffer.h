@@ -12,7 +12,7 @@ private:
     std::vector<uint32_t*> attribs;
 
 public:
-    VertexBuffer(float* vertices, float* texCoord, uint32_t* indicies, uint32_t verticesSize, uint32_t texCoordSize, uint32_t indiciesSize);
+    VertexBuffer(const void* vertices, float* texCoord, uint32_t* indicies, uint32_t verticesSize, uint32_t texCoordSize, uint32_t indiciesSize);
     ~VertexBuffer();
 
 private:
