@@ -6,7 +6,7 @@ VertexBuffer::VertexBuffer(const void* vertices, float* texCoord, uint32_t* indi
     glGenVertexArrays(1, &this->VAO_ID);
     glBindVertexArray(this->VAO_ID);
 
-    //Add the vertices position attribute
+    //Add the vertices position attribute and texture coordiantes
     this->AddAttribute(0, vertices, verticesSize, 3, 3 * sizeof(float));
     this->AddAttribute(1, texCoord, texCoordSize, 2, 2 * sizeof(float));
     

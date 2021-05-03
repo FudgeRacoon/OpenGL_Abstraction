@@ -2,7 +2,7 @@
 
 void Renderer::ClearBuffers()
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.15f, 0.27f, 0.31f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 void Renderer::SwapBuffers(Window* window)
@@ -19,13 +19,7 @@ void Renderer::Render(Mesh*& mesh, const Shader& shader)
     if(mesh->GetTexture())
         mesh->GetTexture()->Bind();
 
-        glm::mat4 projection = glm::perspective
-        (
-            glm::radians(45.0f), 
-            800.0f / 600.0f,
-            0.1f,
-            100.0f   
-        );
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
         
         glm::mat4 view(1.0f);
         view = glm::translate(view, glm::vec3(0.0f, 0.0f, 0.0f));

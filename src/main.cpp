@@ -44,13 +44,15 @@ int main(int argc, char* argv[])
 {
     Window* window = new Window("OpenGL program", 900, 700, SDL_WINDOW_SHOWN, false);
 
-    Mesh* square = ObjParser::LoadObj("res\\assets\\objs\\cube.obj");
-    square->AddTexture("res\\assets\\textures\\woodenCrate.png");
+    Mesh* square = ObjParser::LoadObj("res\\assets\\objs\\bear.obj");
+    square->AddTexture("res\\assets\\textures\\bear.png");
 
     Renderer renderer;
     Shader shader("res\\shaders\\vertex.shader", "res\\shaders\\fragment.shader");
 
     ImGui_Init(window);
+
+    bool runAnimation = false;
 
     float position[3] = {0.0f, 0.0f, -3.0f};
     float rotation[3] = {0.0f, 0.0f, 0.0f};
@@ -68,8 +70,6 @@ int main(int argc, char* argv[])
         renderer.ClearBuffers();
 
         ImGui_CreateNewFrame(window);
-
-        bool runAnimation;
 
         float counter = 0.0f;
 
